@@ -3,5 +3,16 @@
   "version": "0.1.0",
   "engines": {
     "node": ">=16.x"
+  },
+  "dependencies": {
+    "boxen": "4.0",
+    "chalk": "2.4",
+    "colors": "^1.4.0"
+  },
+  "keywords": [],
+  "author": "Romina Espinoza (https://github.com/RominaEspinoz)",
+  "license": "MIT",
+  "bin": {
+    "mdLinks": "./pruebachalk.js"
   }
 }
