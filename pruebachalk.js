@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+/* 
 
 const chalk = require("chalk");
 const boxen = require("boxen");
@@ -14,4 +14,4 @@ const boxenOptions = {
 };
 const msgBox = boxen(greeting, boxenOptions);
 
-console.log(msgBox);
+console.log(msgBox); */

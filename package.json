@@ -7,12 +7,14 @@
   "dependencies": {
     "boxen": "4.0",
     "chalk": "2.4",
-    "colors": "^1.4.0"
+    "colors": "^1.4.0",
+    "get-urls": "^11.0.0",
+    "markdown-link-extractor": "^3.1.0"
   },
   "keywords": [],
   "author": "Romina Espinoza (https://github.com/RominaEspinoz)",
   "license": "MIT",
   "bin": {
-    "mdLinks": "./pruebachalk.js"
+    "mdLinks": "./index.js"
   }
 }
