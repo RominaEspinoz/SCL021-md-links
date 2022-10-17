@@ -6,9 +6,8 @@ module.exports = { mdLinks }; */
 const path = require('path');
 const fs = require('fs');
 const colors = require("colors");
+const fetch = require("node-fetch")
 const { readingDirectory, readingMdFileAndShowLinks, lookingForLinksInADirectory } = require('./functions');
-
-
 
 
 //----> Guardar ruta y opción entregada
@@ -58,7 +57,20 @@ const mdLinks = () => {
 
 mdLinks()
   .then((resolve) => {
-    console.log(resolve);
+    const link = ""
+    for (let index = 0; index < resolve.length; index++) {
+      const link = resolve[index];
+      console.log("1", index, link)
+      fetch(link)
+        .then((respuestaExitosa) => {
+          console.log("2", index, link, respuestaExitosa.status)
+        })
+        .catch((error) => {
+          //console.log(Object.keys(error), Object.values(error))
+          console.log(error)
+
+        })
+    }
   })
   .catch((reject) => console.log(reject));
 

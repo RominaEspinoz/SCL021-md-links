@@ -4,7 +4,7 @@ const fs = require('fs');
 const colors = require("colors");
 
 
-const urlFormat = /(https?:\/\/)(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)/gi;
+const urlFormat = /(https?:\/\/)(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9(!@:%_\+.~#?&\/\/=]*)/gi;
 //console.log(ext);
 
 //----> Verificar que archivo sea .md, luego leerlo y mostrar links 
@@ -73,6 +73,8 @@ function lookingForLinksInADirectory() {
     })
 
 }
+
+
 
 
 module.exports = { readingDirectory, readingMdFileAndShowLinks, lookingForLinksInADirectory };

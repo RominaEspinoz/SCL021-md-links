@@ -9,7 +9,8 @@
     "chalk": "2.4",
     "colors": "^1.4.0",
     "get-urls": "^11.0.0",
-    "markdown-link-extractor": "^3.1.0"
+    "markdown-link-extractor": "^3.1.0",
+    "node-fetch": "^2.6.7"
   },
   "keywords": [],
   "author": "Romina Espinoza (https://github.com/RominaEspinoz)",
