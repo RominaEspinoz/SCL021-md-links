@@ -6,7 +6,7 @@ module.exports = { mdLinks }; */
 const path = require('path');
 const fs = require('fs');
 const colors = require("colors");
-const { readingDirectory, readingMdFileAndShowLinks, lookingForLinksInADirectory } = require('./functions');
+const { readingDirectory, readingMdFileAndShowLinks, lookingForLinksInADirectory, validateLinks } = require('./functions');
 
 
 
@@ -31,9 +31,13 @@ const mdLinks = () => {
       //return "Es un directorio y contiene los siguientes archivos: ".red
       //return (readingDirectory(absoluteRoute))
       const contentDirectory = readingDirectory(absoluteRoute)
-      lookingForLinksInADirectory(contentDirectory).then((linksOnDirectory) => {
-        resolve(linksOnDirectory);
-      })
+      lookingForLinksInADirectory(contentDirectory)
+        .then((linksOnDirectory) => {
+          validateLinks(linksOnDirectory).
+            then((linksOnDirectory) => {
+              console.log("1", linksOnDirectory)
+            });
+        })
         .catch((err) => console.log(err))
     }
     else {
@@ -58,7 +62,7 @@ const mdLinks = () => {
 
 mdLinks()
   .then((resolve) => {
-    console.log(resolve);
+    console.log("resolvemdlinks", resolve);
   })
   .catch((reject) => console.log(reject));
 

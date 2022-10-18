@@ -2,9 +2,10 @@
 const path = require('path');
 const fs = require('fs');
 const colors = require("colors");
+const fetch = require("node-fetch")
 
 
-const urlFormat = /(https?:\/\/)(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)/gi;
+const urlFormat = (/(https?:\/\/)(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9(!@:%_\+.~#?&\/\/=]*)/gi);
 //console.log(ext);
 
 //----> Verificar que archivo sea .md, luego leerlo y mostrar links 
@@ -74,7 +75,21 @@ function lookingForLinksInADirectory() {
 
 }
 
+function validateLinks(linksToValidate) {
+    return new Promise((resolve, reject) => {
+        for (let index = 0; index < linksToValidate.length; index++) {
+            const link = linksToValidate[index];
+            resolve((fetch(link)
+                .then((respuestaExitosa) => {
+                    console.log("2", index, link, respuestaExitosa.status)
+                })))
+            /*  resolve(Promise.all([fetch(link)]).then(values => {
+                 console.log(values);
+             })) */
+        }
+    })
+}
 
-module.exports = { readingDirectory, readingMdFileAndShowLinks, lookingForLinksInADirectory };
+module.exports = { readingDirectory, readingMdFileAndShowLinks, lookingForLinksInADirectory, validateLinks };
 
 
