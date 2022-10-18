@@ -2,6 +2,7 @@
 const path = require('path');
 const fs = require('fs');
 const colors = require("colors");
+const fetch = require("node-fetch")
 
 
 const urlFormat = /(https?:\/\/)(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9(!@:%_\+.~#?&\/\/=]*)/gi;
@@ -75,8 +76,17 @@ function lookingForLinksInADirectory() {
 }
 
 
+function validateLinks(linksToValidate) {
+    for (let index = 0; index < linksToValidate.length; index++) {
+        const link = linksToValidate[index]
+        Promise.allSettled([
+            fetch(link)
+        ])
+    }
+}
+
 
 
 module.exports = { readingDirectory, readingMdFileAndShowLinks, lookingForLinksInADirectory };
-
+module.exports = { validateLinks };
 

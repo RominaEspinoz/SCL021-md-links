@@ -8,6 +8,7 @@ const fs = require('fs');
 const colors = require("colors");
 const fetch = require("node-fetch")
 const { readingDirectory, readingMdFileAndShowLinks, lookingForLinksInADirectory } = require('./functions');
+const { validateLinks } = require('./functions')
 
 
 //----> Guardar ruta y opción entregada
@@ -22,25 +23,31 @@ const absoluteRoute = path.isAbsolute(route) === true ? route : path.resolve(rou
 //console.log(path.parse(route))
 
 //----> Ver sí la ruta corresponde a un archivo o a un directorio
-const mdLinks = () => {
+const mdLinks = (userPath, option) => {
   return new Promise((resolve, reject) => {
     const linksArray = [];
-    const isDirectory = (fs.statSync(absoluteRoute).isDirectory());
+    const isDirectory = (fs.statSync(userPath).isDirectory());
     if (isDirectory === true) {
       //return "Es un directorio y contiene los siguientes archivos: ".red
       //return (readingDirectory(absoluteRoute))
-      const contentDirectory = readingDirectory(absoluteRoute)
+      const contentDirectory = readingDirectory(userPath)
       lookingForLinksInADirectory(contentDirectory).then((linksOnDirectory) => {
-        resolve(linksOnDirectory);
+        if (option === "--validate:false") {
+          //resolve(validateLinks(linksOnDirectory))
+          resolve(linksOnDirectory);//AKI HAGO MAP PARA DAR FORMATO
+        }
+        else {
+
+        }
       })
         .catch((err) => console.log(err))
     }
     else {
-      if (path.extname(absoluteRoute) !== ".md") {
+      if (path.extname(userPath) !== ".md") {
         reject("Error, no es un archivo .md".red.bgGreen)
       }
       else {
-        readingMdFileAndShowLinks(absoluteRoute).then((url) => {
+        readingMdFileAndShowLinks(userPath).then((url) => {
           url.forEach((link) => {
             linksArray.push(link)
           });
@@ -54,24 +61,5 @@ const mdLinks = () => {
 };
 
 
-
-mdLinks()
-  .then((resolve) => {
-    const link = ""
-    for (let index = 0; index < resolve.length; index++) {
-      const link = resolve[index];
-      console.log("1", index, link)
-      fetch(link)
-        .then((respuestaExitosa) => {
-          console.log("2", index, link, respuestaExitosa.status)
-        })
-        .catch((error) => {
-          //console.log(Object.keys(error), Object.values(error))
-          console.log(error)
-
-        })
-    }
-  })
-  .catch((reject) => console.log(reject));
-
-
+mdLinks(absoluteRoute, option)
+  .then(values => console.log(values))
