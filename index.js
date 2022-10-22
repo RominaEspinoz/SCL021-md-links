@@ -1,69 +1,70 @@
 #!/usr/bin/env node
-/* const mdLinks = () => {
 
-}
-module.exports = { mdLinks }; */
 const path = require('path');
 const fs = require('fs');
 const colors = require("colors");
-const { readingDirectory, readingMdFileAndShowLinks, lookingForLinksInADirectory, validateLinks } = require('./functions');
+const { readingDirectory, readingMdFileAndShowLinks, lookingForLinksInADirectory, validateLinks, toAbosulute } = require('./functions');
 
 
-
-
-//----> Guardar ruta y opción entregada
-const route = path.normalize(process.argv[2]) // Constante que guarda y normaliza la ruta entregada
-const option = process.argv[3] // Constante que guarda la opción entregada (Stats, Validate, Validate Stats)
-//console.log(route, option)
-
-
-//----> Verificar si la ruta es absoluta, si no lo es cambiar a absoluta
-const absoluteRoute = path.isAbsolute(route) === true ? route : path.resolve(route);
-//console.log("1", absoluteRoute)
-//console.log(path.parse(route))
-
-//----> Ver sí la ruta corresponde a un archivo o a un directorio
-const mdLinks = () => {
+const mdLinks = (route, option) => {
   return new Promise((resolve, reject) => {
-    const linksArray = [];
-    const isDirectory = (fs.statSync(absoluteRoute).isDirectory());
-    if (isDirectory === true) {
-      //return "Es un directorio y contiene los siguientes archivos: ".red
-      //return (readingDirectory(absoluteRoute))
-      const contentDirectory = readingDirectory(absoluteRoute)
-      lookingForLinksInADirectory(contentDirectory)
-        .then((linksOnDirectory) => {
-          validateLinks(linksOnDirectory).
-            then((linksOnDirectory) => {
-              console.log("1", linksOnDirectory)
-            });
-        })
-        .catch((err) => console.log(err))
+    //Verifica que se ingrese la ruta y la opción de manera correcta 
+    if (route === undefined) {
+      reject("Error, no se ha ingresado la ruta".bold.red)
+    }
+    else if (fs.existsSync(route) !== true) {
+      reject("Error, la ruta no existe".bold.red)
+    }
+    else if (option !== "--validate" && option !== "--stats" && option !== undefined) {
+      reject("Error, esta opción no existe. Las opciones que puedes usar son: --validate y --stats".bold.red)
     }
     else {
-      if (path.extname(absoluteRoute) !== ".md") {
-        reject("Error, no es un archivo .md".red.bgGreen)
-      }
-      else {
-        readingMdFileAndShowLinks(absoluteRoute).then((url) => {
-          url.forEach((link) => {
-            linksArray.push(link)
-          });
-          resolve(linksArray)
-        })
+      //Verifica ruta absoluta, si es relativa cambia a absoluta
+      const absoluteRoute = toAbosulute(route)
+      //Verifica si es un directorio 
+      const isDirectory = (fs.statSync(absoluteRoute).isDirectory());
+      if (isDirectory === true) {
+        //Leer directorio y buscar arhivos .md
+        const contentDirectory = readingDirectory(absoluteRoute)
+        //Buscar links en archivos .md
+        lookingForLinksInADirectory(contentDirectory)
+          .then((linksOnDirectory) => {
+            //Validar links encontrados según la opción
+            validateLinks(linksOnDirectory, absoluteRoute, option)
+              .then((infoLinks) => {
+                // Resuelve Array con Objetos que contienen información de los links
+                resolve(infoLinks)
+              })
+          })
           .catch((err) => console.log(err))
       }
+      else {
+        //Verifica si la ruta entregada es un archivo .md
+        if (path.extname(absoluteRoute) !== ".md") {
+          reject("Error, no es un archivo .md".red.bgGreen)
+        }
+        else {
+          // Lee arhivo .md y busca links
+          const linksArray = [];
+          readingMdFileAndShowLinks(absoluteRoute).then((url) => {
+            url.forEach((link) => {
+              linksArray.push(link)
+            });
+            // Validar links encontrados según la opción
+            validateLinks(linksArray, absoluteRoute, option).then((infoLinks) => {
+              // Resuelve Array con Objetos que contienen información de los links
+              resolve(infoLinks)
+            })
+          })
+            .catch((err) => console.log(err))
+        }
 
+      }
     }
+
   })
 };
 
 
 
-mdLinks()
-  .then((resolve) => {
-    console.log("resolvemdlinks", resolve);
-  })
-  .catch((reject) => console.log(reject));
-
-
+module.exports = { mdLinks }

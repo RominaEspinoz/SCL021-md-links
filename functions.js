@@ -2,33 +2,46 @@
 const path = require('path');
 const fs = require('fs');
 const colors = require("colors");
-const fetch = require("node-fetch")
-
-
+const fetch = require("node-fetch");
 const urlFormat = (/(https?:\/\/)(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9(!@:%_\+.~#?&\/\/=]*)/gi);
-//console.log(ext);
+const textLinkFormat = (/(\[)(.*)+(\])/gi);
 
-//----> Verificar que archivo sea .md, luego leerlo y mostrar links 
+
+//----> Verificar si la ruta es absoluta, si no lo es cambiar a absoluta 
+//----> Normaliza ruta
+const toAbosulute = (route) => {
+    const absoluteRoute = path.isAbsolute(route) === true ? path.normalize(route) : path.normalize(path.resolve(route));
+    return absoluteRoute
+}
+
+/*---------ARCHIVOS----------- */
+
+//----> Leer archivo .md y mostrar links 
 function readingMdFileAndShowLinks(route) {
     return new Promise((resolve, reject) => {
         const linksArray = [];
+        //const linksText = []; //Array para guardar texto de los links
         fs.readFile(route, 'utf-8', (err, data) => {
             if (err) {
                 reject(err);
             } else if (data.match(urlFormat) === null) {
-                //console.log("Error no existen links")
-                reject("Error, no existen links en el archivo de la ruta".red.bgWhite);
+                reject("Error, no existen links en el archivo".red.bgWhite);
             } else if (data) {
                 data.match(urlFormat).forEach((link) => {
                     linksArray.push(link)
                 });
+                /*                 data.match(textLinkFormat).forEach((text) => {
+                                    linksText.push(text)
+                                }) */
                 resolve(linksArray);
             }
         });
     });
 };
 
-//----> Fitrar archivos segun su extension dentro de un directorio
+/*---------DIRECTORIOS----------- */
+
+//----> Fitrar archivos segun su extensión dentro de un directorio
 const filterMdFiles = (extension, files) => {
     return files.filter(function (file) {
         return file.indexOf(extension) > -1;
@@ -44,7 +57,6 @@ function readingDirectory(route) {
     return mdFiles;
 }
 
-
 //----> Si la ruta es un directorio, recorrer archivos md dentro del directorio y mostrar links
 function lookingForLinksInADirectory() {
     return new Promise((resolve, reject) => {
@@ -58,7 +70,7 @@ function lookingForLinksInADirectory() {
                 //console.log("5", absoulteMdRoute)
                 readingMdFileAndShowLinks(absoulteMdRoute).then((linksObtained) => {
                     //console.log({ linksObtained })
-                    linksResult = [...linksResult, ...linksObtained]
+                    linksResult = [...linksObtained, ...linksResult]//[...linksResult, ...linksObtained]
                     if (i === mdFiles.length - 1) {
                         //console.log({ linksResult })
                         resolve(linksResult)
@@ -75,21 +87,65 @@ function lookingForLinksInADirectory() {
 
 }
 
-function validateLinks(linksToValidate) {
-    return new Promise((resolve, reject) => {
-        for (let index = 0; index < linksToValidate.length; index++) {
-            const link = linksToValidate[index];
-            resolve((fetch(link)
-                .then((respuestaExitosa) => {
-                    console.log("2", index, link, respuestaExitosa.status)
-                })))
-            /*  resolve(Promise.all([fetch(link)]).then(values => {
-                 console.log(values);
-             })) */
-        }
-    })
+/*---------VALIDAR LINKS----------- */
+
+function validateLinks(linksToValidate, route, option) {
+    if (option === "--validate" || option === "--stats") {
+        const arrValidatedLinks = linksToValidate.map((link) => {
+            //console.log("10", link)
+            return fetch(link)
+                .then((linkToValidate) => {
+                    //console.log(linkToValidate)
+                    const infoLinks = {
+                        Href: linkToValidate.url,
+                        Text: "aun no se como sacar text",
+                        File: route,
+                        Status: linkToValidate.status,
+                        ok: linkToValidate.statusText === "OK" ? linkToValidate.statusText : "Fail"
+                    };
+                    return infoLinks
+                })
+                .catch((err) => {
+                    const infoError = {
+                        Href: link,
+                        Text: "aun nose como sacar text",
+                        File: route,
+                        Status: err.errno,
+                        ok: "Fail",
+                        Message: "Fetch no ha podido validar ulr",
+                    }
+                    return infoError
+                })
+        })
+        return Promise.all(arrValidatedLinks)
+    }
+    else {
+        const arrValidatedLinks = linksToValidate.map((link) => {
+            //console.log("10", link)
+            return fetch(link)
+                .then((linkToValidate) => {
+                    //console.log(linkToValidate)
+                    const infoLinks = {
+                        Href: linkToValidate.url,
+                        Text: "aun no se como sacar text",
+                        File: route,
+                    };
+                    return infoLinks
+                })
+                .catch((err) => {
+                    const infoError = {
+                        Href: link,
+                        File: route,
+                        Status: err.errno,
+                        Message: "Fethc no ha podido validar ulr"
+                    }
+                    return infoError
+                })
+        })
+        return Promise.all(arrValidatedLinks)
+    }
+
 }
 
-module.exports = { readingDirectory, readingMdFileAndShowLinks, lookingForLinksInADirectory, validateLinks };
 
-
+module.exports = { toAbosulute, readingDirectory, readingMdFileAndShowLinks, lookingForLinksInADirectory, validateLinks };
