@@ -70,7 +70,7 @@ function lookingForLinksInADirectory() {
                 //console.log("5", absoulteMdRoute)
                 readingMdFileAndShowLinks(absoulteMdRoute).then((linksObtained) => {
                     //console.log({ linksObtained })
-                    linksResult = [...linksObtained, ...linksResult]//[...linksResult, ...linksObtained]
+                    linksResult = [...linksResult, ...linksObtained]//[...linksObtained, ...linksResult]
                     if (i === mdFiles.length - 1) {
                         //console.log({ linksResult })
                         resolve(linksResult)
