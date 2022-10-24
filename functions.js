@@ -98,7 +98,7 @@ function validateLinks(linksToValidate, route, option) {
                     //console.log(linkToValidate)
                     const infoLinks = {
                         Href: linkToValidate.url,
-                        Text: "aun no se como sacar text",
+                        //Text: ,
                         File: route,
                         Status: linkToValidate.status,
                         ok: linkToValidate.statusText === "OK" ? linkToValidate.statusText : "Fail"
@@ -108,7 +108,7 @@ function validateLinks(linksToValidate, route, option) {
                 .catch((err) => {
                     const infoError = {
                         Href: link,
-                        Text: "aun nose como sacar text",
+                        //Text: ,
                         File: route,
                         Status: err.errno,
                         ok: "Fail",
@@ -127,7 +127,7 @@ function validateLinks(linksToValidate, route, option) {
                     //console.log(linkToValidate)
                     const infoLinks = {
                         Href: linkToValidate.url,
-                        Text: "aun no se como sacar text",
+                        //Text: ,
                         File: route,
                     };
                     return infoLinks

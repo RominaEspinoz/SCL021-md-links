@@ -66,5 +66,12 @@ const mdLinks = (route, option) => {
 };
 
 
+/* const route = process.argv[2];
+const absoluteRoute = path.isAbsolute(route) === true ? path.normalize(route) : path.normalize(path.resolve(route));
+const option = process.argv[3];
+
+mdLinks(absoluteRoute, option)
+  .then(values => console.log(values))
+  .catch((err) => console.log(err)) */
 
 module.exports = { mdLinks }
