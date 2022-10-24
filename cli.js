@@ -67,7 +67,7 @@ function validate() {
                 const brokenLinks = (searchBrokenLinks.filter(stats => stats === "Fail")).length
                 console.log("           ", "RESULTADOS DE ESCANEO MNDLINKS".red.bold.bgYellow)
                 console.log(" -----------------------------------------------------------")
-                console.log("| Total de Links:", totalLinks, " | ", "Links Únicos:", uniqueLinks, " | ", "Links Rotos:", brokenLinks, " | ")
+                console.log("| Total de Links:".bold, totalLinks, " | ", "Links Únicos:".bold, uniqueLinks, " | ", "Links Rotos:".bold, brokenLinks, " | ")
                 console.log(" -----------------------------------------------------------")
             })
             .catch((reject) => console.log("6", reject));
